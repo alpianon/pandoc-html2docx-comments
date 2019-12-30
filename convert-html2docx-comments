@@ -1,0 +1,59 @@
+#!/usr/bin/perl
+
+# SPDX-License-Identifier: GPL-3.0-only
+#
+# Copyright (C) 2019 Alberto Pianon <pianon@array.eu>
+#
+# This program is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 3.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program. If not, see <https://www.gnu.org/licenses/>.
+
+sub trim {
+    my($in) = @_;
+    $in =~ s/\n//g; # remove newlines
+    $in =~ s/\r//g; # remove carriage returns
+    $in =~ s/^\s+|\s+$//g; # trim whitespace
+    $in =~ s/ +/ /g; # remove multiple whitespace
+    return $in;
+}
+sub author_comment {
+    my($in) = @_;
+    $in = trim($in);
+    $in =~ /^\((.*)\)(.*)/; # find "(Author) Comment"
+    my $first = trim($1);
+    my $second = trim($2);
+    if ($second eq '') {
+        return 'unknown', $first; # no Author specified, return "unknown", Comment
+    }
+    else {
+        return $first, $second; # return Author, Comment
+    }
+}
+sub format_comment {
+    my($author, $comment, $id, $date) = @_;
+    return sprintf('[%s]{.comment-start author="%s" id="%s" date="%s"}[]{.comment-end id="%s"}', $comment, $author, $id, $datestr, $id);
+}
+sub get_formatted_localdate {
+    ($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst) = localtime();
+    return sprintf('%02d-%02d-%04dT%02d:%02d:%02dZ', $year + 1900, $mon + 1, $mday, $hour, $min, $sec);
+}
+
+BEGIN { $/ = undef; $\ = undef; }
+LINE: while (defined($_ = readline ARGV)) {
+    sub BEGIN {
+        $ID = 1;
+        $datestr = get_formatted_localdate(); 
+    }
+    s/<\!--((.|\s)*?)-->/format_comment author_comment($1), $ID++, $datestr;/seg;
+}
+continue {
+    die "-p destination: $!\n" unless print $_;
+}
+
