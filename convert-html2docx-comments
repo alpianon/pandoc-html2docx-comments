@@ -25,16 +25,17 @@ sub trim {
 }
 sub author_comment {
     my($in) = @_;
+    my $author, $comment;
     $in = trim($in);
-    $in =~ /^\((.*)\)(.*)/; # find "(Author) Comment"
-    my $first = trim($1);
-    my $second = trim($2);
-    if ($second eq '') {
-        return 'unknown', $first; # no Author specified, return "unknown", Comment
+    if ($in =~ /^\((.*)\)(.*)/) { # found "(Author) Comment"
+        $author = trim($1);
+        $comment = trim($2);
     }
     else {
-        return $first, $second; # return Author, Comment
+        $author = "unknown";
+        $comment = $in;
     }
+    return $author, $comment;
 }
 sub format_comment {
     my($author, $comment, $id, $date) = @_;
