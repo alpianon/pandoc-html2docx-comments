@@ -11,7 +11,7 @@ copy `convert-html2docx-comments` to `/usr/bin` (or other path of your choice) a
 
 ```bash
 sudo cp convert-html2docx-comments /usr/bin
-chmod +x /usr/bin/convert-html2docx-comments
+sudo chmod +x /usr/bin/convert-html2docx-comments
 ```
 
 ## Usage
