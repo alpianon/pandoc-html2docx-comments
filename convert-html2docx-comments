@@ -17,8 +17,8 @@
 
 sub trim {
     my($in) = @_;
-    $in =~ s/\n//g; # remove newlines
-    $in =~ s/\r//g; # remove carriage returns
+    $in =~ s/\n/ /g; # remove newlines
+    $in =~ s/\r/ /g; # remove carriage returns
     $in =~ s/^\s+|\s+$//g; # trim whitespace
     $in =~ s/ +/ /g; # remove multiple whitespace
     return $in;
@@ -27,7 +27,7 @@ sub author_comment {
     my($in) = @_;
     my $author, $comment;
     $in = trim($in);
-    if ($in =~ /^\((.*)\)(.*)/) { # found "(Author) Comment"
+    if ($in =~ /^\(([^\)]+)\)(.*)/) { # found "(Author) Comment"
         $author = trim($1);
         $comment = trim($2);
     }
@@ -57,4 +57,5 @@ LINE: while (defined($_ = readline ARGV)) {
 continue {
     die "-p destination: $!\n" unless print $_;
 }
+
 
